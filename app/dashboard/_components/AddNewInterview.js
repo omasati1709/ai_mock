@@ -11,6 +11,14 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { chatSession } from '@/utils/GeminiAIModal'
+import { LoaderCircle } from 'lucide-react'
+import { v4 as uuidv4 } from 'uuid';
+import { useUser } from '@clerk/nextjs'
+import moment from 'moment/moment'
+import { db } from '@/utils/db'
+import { MockInterview } from '@/utils/schema'
+import { useRouter } from 'next/navigation'
 
 
 const AddNewInterview = () => {
@@ -18,6 +26,47 @@ const AddNewInterview = () => {
     const [jobPosition, setJobPosition] = useState();
     const [jobDesc, setJobDesc] = useState();
     const [jobExperience, setJobExperience] = useState();
+    const [loading, setLoading] = useState(false);
+    const [jsonResponse, setJsonResponse] = useState([]);
+    const { user } = useUser();
+    const router = useRouter();
+
+    const onSubmit = async (e) => {
+        setLoading(true)
+        e.preventDefault()
+        console.log(jobPosition, jobDesc, jobExperience);
+
+        const InputPrompt = "Job position: " + jobPosition + ", Job Description: " + jobDesc + ", Years of Experience : " + jobExperience + " , Depends on Job Position, Job Description & Years of Experience give us " + process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT + " Interview question along with Answer in JSON format, Give us question and answer field on JSON"
+
+        const result = await chatSession.sendMessage(InputPrompt);
+        const MockJsonResp = (result.response.text()).replace('```json', '').replace('```', '')
+        console.log(JSON.parse(MockJsonResp));
+        setJsonResponse(MockJsonResp);
+
+        if (MockJsonResp) {
+            const resp = await db.insert(MockInterview)
+                .values({
+                    mockId: uuidv4(),
+                    jsonMockResp: MockJsonResp,
+                    jobPosition: jobPosition,
+                    jobDesc: jobDesc,
+                    jobExperience: jobExperience,
+                    createdBy: user?.primaryEmailAddress?.emailAddress,
+                    createdAt: moment().format('DD-MM-yyyy')
+                }).returning({ mockId: MockInterview.mockId });
+
+            console.log("Inserted ID:", resp)
+            if (resp) {
+                setOpenDialog(false);
+            }
+        }
+        else {
+            console.log("ERROR");
+        }
+        setLoading(false);
+    }
+
+
     return (
 
         <div>
@@ -34,7 +83,7 @@ const AddNewInterview = () => {
                     <DialogHeader>
                         <DialogTitle className="text-2xl" >Tell us more about your job interviewing</DialogTitle>
                         <DialogDescription>
-                            <form>
+                            <form onSubmit={onSubmit}>
                                 <div>
                                     <h2>Add Details about your job position/role, Job description and years of experience</h2>
                                     <div className='mt-7 my-3'>
@@ -59,9 +108,13 @@ const AddNewInterview = () => {
                                 </div>
 
                                 <div className='flex gap-5 justify-end'>
-                                    <Button type="button" variant="ghost" onClick={() => setOpenDialog(false)}>Cancel</Button>
-                                    <Button type="submit">
-                                        Start Interview
+                                    <Button type="button" variant="ghost" onClick={() => setOpenDailog(false)}>Cancel</Button>
+                                    <Button type="submit" disabled={loading} >
+                                        {loading ?
+                                            <>
+                                                <LoaderCircle className='animate-spin' /> Generating from AI
+                                            </> : 'Start Interview'
+                                        }
                                     </Button>
                                 </div>
                             </form>
