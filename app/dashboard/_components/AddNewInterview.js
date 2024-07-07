@@ -58,6 +58,7 @@ const AddNewInterview = () => {
             console.log("Inserted ID:", resp)
             if (resp) {
                 setOpenDialog(false);
+                router.push('/dashboard/interview/' + resp[0]?.mockId)
             }
         }
         else {
