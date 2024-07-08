@@ -40,20 +40,20 @@ function Interview({ params }) {
                         <h2 className='mt-3'>{process.env.NEXT_PUBLIC_INFORMATION}</h2>
                     </div>
                 </div>
-                <div>
+                <div className='flex flex-col justify-center items-center bg-black rounded-lg p-5'>
                     {webCamEnabled ? <Webcam
                         onUserMedia={() => setWebCamEnabled(true)}
                         onUserMediaError={() => setWebCamEnabled(false)}
                         mirrored={true}
                         style={{
                             height: 300,
-                            width: 300
+                            width: 500
                         }}
                     />
                         :
                         <>
                             <WebcamIcon className='h-72 w-full my-6 p-20 bg-secondary rounded-lg border' />
-                            <Button variant="ghost" className="w-full bg-blue-200" onClick={() => setWebCamEnabled(true)}>Enable your Web Cam and Microphone</Button>
+                            <Button variant="ghost" className="w-full bg-blue-200 " onClick={() => setWebCamEnabled(true)}>Enable your Web Cam and Microphone</Button>
                         </>
                     }
                 </div>
