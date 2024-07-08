@@ -46,8 +46,8 @@ function Feedback({ params }) {
                     {feedbackList && feedbackList.map((item, index) => (
                         <Collapsible key={index} className='mt-7'>
                             <CollapsibleTrigger className='p-2
-             bg-secondary rounded-lg flex justify-between
-            my-2 text-left gap-7 w-full'>
+                                bg-secondary rounded-lg flex justify-between
+                                my-2 text-left gap-7 w-full'>
                                 {item.question} <ChevronsUpDown className='h-5 w-5' />
                             </CollapsibleTrigger>
                             <CollapsibleContent>

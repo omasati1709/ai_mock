@@ -36,7 +36,7 @@ const AddNewInterview = () => {
         e.preventDefault()
         console.log(jobPosition, jobDesc, jobExperience);
 
-        const InputPrompt = "Job position: " + jobPosition + ", Job Description: " + jobDesc + ", Years of Experience : " + jobExperience + " , Depends on Job Position, Job Description & Years of Experience give us " + process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT + " Interview question along with Answer in JSON format, Give us question and answer field on JSON"
+        const InputPrompt = "Job position: " + jobPosition + ", Job Description: " + jobDesc + ", Years of Experience : " + jobExperience + " , Depends on Job Position, Job Description & Years of Experience give us " + process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT + " Interview question along with Answer in JSON format, Give us question and long answer field on JSON"
 
         const result = await chatSession.sendMessage(InputPrompt);
         const MockJsonResp = (result.response.text()).replace('```json', '').replace('```', '')
@@ -109,7 +109,7 @@ const AddNewInterview = () => {
                                 </div>
 
                                 <div className='flex gap-5 justify-end'>
-                                    <Button type="button" variant="ghost" onClick={() => setOpenDailog(false)}>Cancel</Button>
+                                    <Button type="button" variant="ghost" onClick={() => setOpenDialog(false)}>Cancel</Button>
                                     <Button type="submit" disabled={loading} >
                                         {loading ?
                                             <>
